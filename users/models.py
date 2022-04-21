@@ -5,7 +5,6 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 import os
-from versatileimagefield.fields import VersatileImageField, PPOIField
 
 
 class UserManager(BaseUserManager):
