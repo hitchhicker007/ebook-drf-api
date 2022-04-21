@@ -199,3 +199,10 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
         model = Image
         fields = ('pk', 'image', 'timestamp')
 
+
+class GetProfileSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'

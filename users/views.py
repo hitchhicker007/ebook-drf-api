@@ -56,25 +56,27 @@ class UserProfileView(RetrieveAPIView):
     def get(self, request):
         try:
             user_profile = UserProfile.objects.get(user=request.user)
-            status_code = status.HTTP_200_OK
+            serializer = GetProfileSerializer(user_profile)
             district = Districts.objects.get(id=user_profile.district)
             course = Courses.objects.get(id=user_profile.course)
             branch = Branches.objects.get(id=user_profile.branch)
             college = Colleges.objects.get(id=user_profile.college)
+            status_code = status.HTTP_200_OK
             response = {
                 'success': 'true',
                 'status code': status_code,
                 'message': 'User profile fetched successfully',
-                'data': [{
-                    'name': user_profile.name,
-                    'email': request.user.email,
-                    'district': district.district,
-                    'course': course.course,
-                    'branch': branch.branch,
-                    'sem': user_profile.sem,
-                    'college': college.college,
-                    'avatar': user_profile.avatar
-                }]
+                'data': serializer.data
+                # 'data': [{
+                #     'name': user_profile.name,
+                #     'email': request.user.email,
+                #     'district': district.district,
+                #     'course': course.course,
+                #     'branch': branch.branch,
+                #     'sem': user_profile.sem,
+                #     'college': college.college,
+                #     'avatar': serializer.avatar
+                # }]
             }
         except Exception as e:
             status_code = status.HTTP_400_BAD_REQUEST
@@ -280,7 +282,7 @@ class ImageList(ListAPIView):
 
 
 class ImageDetail(RetrieveAPIView):
-    'Retrieve an image instance'
+    """Retrieve an image instance"""
 
     serializer_class = ImageSerializer
     permission_classes = (IsAuthenticated,)
@@ -289,7 +291,7 @@ class ImageDetail(RetrieveAPIView):
 
 
 class ImageCreate(CreateAPIView):
-    'Create a new image instance'
+    """Create a new image instance"""
 
     serializer_class = ImageSerializer
 
