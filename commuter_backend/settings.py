@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-bkf!l0_@$h0ys4bmol#38s_tl!sw(bt^j(mx0l_prk(sha@n54
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ebookstore-drf-api.herokuapp.com','127.0.0.1']
 
 
 # Application definition
