@@ -6,8 +6,6 @@ from .serializers import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import *
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import update_last_login
-from django.http import JsonResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 
 

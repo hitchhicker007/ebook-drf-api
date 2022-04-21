@@ -12,9 +12,6 @@ import base64
 import six
 import imghdr
 
-from versatileimagefield.serializers import VersatileImageFieldSerializer
-
-
 
 class Base64ImageField(serializers.ImageField):
 
