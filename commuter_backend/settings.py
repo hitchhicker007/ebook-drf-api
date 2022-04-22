@@ -131,11 +131,17 @@ WSGI_APPLICATION = 'commuter_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_a61f68_parth',
-        'USER': 'a61f68_parth',
-        'PASSWORD': 'Parth@123',
-        'HOST': 'mysql6013.site4now.net',
+        # 'NAME': 'db_a61f68_parth',
+        # 'USER': 'a61f68_parth',
+        # 'PASSWORD': 'Parth@123',
+        # 'HOST': 'mysql6013.site4now.net',
+        # 'PORT': '3306',
+        'NAME': 'bookstore',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
         'PORT': '3306'
+
     }
 }
 

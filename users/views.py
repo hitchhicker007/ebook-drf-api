@@ -64,17 +64,17 @@ class UserProfileView(RetrieveAPIView):
                 'success': 'true',
                 'status code': status_code,
                 'message': 'User profile fetched successfully',
-                'data': serializer.data
-                # 'data': [{
-                #     'name': user_profile.name,
-                #     'email': request.user.email,
-                #     'district': district.district,
-                #     'course': course.course,
-                #     'branch': branch.branch,
-                #     'sem': user_profile.sem,
-                #     'college': college.college,
-                #     'avatar': serializer.avatar
-                # }]
+                # 'data': serializer.data
+                'data': [{
+                    'name': user_profile.name,
+                    'email': request.user.email,
+                    'district': district.district,
+                    'course': course.course,
+                    'branch': branch.branch,
+                    'sem': user_profile.sem,
+                    'college': college.college,
+                    'avatar': serializer.data['avatar']
+                }]
             }
         except Exception as e:
             status_code = status.HTTP_400_BAD_REQUEST
@@ -88,7 +88,6 @@ class UserProfileView(RetrieveAPIView):
 
 
 class UpdateProfileView(RetrieveAPIView):
-    parser_classes = [MultiPartParser, FormParser]
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
 
@@ -118,6 +117,12 @@ class UpdateProfileView(RetrieveAPIView):
             instance.save()
             status_code = status.HTTP_200_OK
 
+
+            district = Districts.objects.get(id=instance.district)
+            course = Courses.objects.get(id=instance.course)
+            branch = Branches.objects.get(id=instance.branch)
+            college = Colleges.objects.get(id=instance.college)
+
             response = {
                 'success': 'true',
                 'status code': status_code,
@@ -125,11 +130,11 @@ class UpdateProfileView(RetrieveAPIView):
                 'data': [{
                     'name': instance.name,
                     'email': request.user.email,
-                    'district': instance.district,
-                    'course': instance.course,
-                    'branch': instance.branch,
+                    'district': district.district,
+                    'course': course.course,
+                    'branch': branch.branch,
                     'sem': instance.sem,
-                    'college': instance.college,
+                    'college': college.college,
                 }]
             }
         except Exception as e:
