@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import LimitOffsetPagination
 
 
 # Create your views here.
@@ -44,6 +45,7 @@ class GetUserBooksView(ListAPIView):
     serializer_class = BookSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         user = self.request.user
