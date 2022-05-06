@@ -12,5 +12,7 @@ class Book(models.Model):
     branch = models.CharField(max_length=50, blank=False)
     sem = models.CharField(max_length=2, blank=False)
     subject = models.CharField(max_length=50, blank=False)
+    publication = models.CharField(max_length=50,blank=True)
     district = models.CharField(max_length=50, blank=False)
     seller = models.CharField(max_length=50, blank=False)
+
