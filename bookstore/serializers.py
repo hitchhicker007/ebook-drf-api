@@ -12,3 +12,10 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
+
+
+class BookListingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Book
+        fields = ('id','image','name','subject')

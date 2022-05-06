@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, GenericAPIView, RetrieveDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import *
@@ -65,16 +65,30 @@ class UserProfileView(RetrieveAPIView):
                 'status code': status_code,
                 'message': 'User profile fetched successfully',
                 # 'data': serializer.data
-                'data': [{
+                'data': {
                     'name': user_profile.name,
+                    'user_id': request.user.id,
+                    'profile_id': user_profile.id,
                     'email': request.user.email,
-                    'district': district.district,
-                    'course': course.course,
-                    'branch': branch.branch,
+                    'district': {
+                        'id': district.id,
+                        'district': district.district
+                    },
+                    'college': {
+                        'id': college.id,
+                        'college': college.college
+                    },
+                    'course': {
+                        'id': course.id,
+                        'course': course.course
+                    },
+                    'branch': {
+                        'id': branch.id,
+                        'branch': branch.branch
+                    },
                     'sem': user_profile.sem,
-                    'college': college.college,
                     'avatar': serializer.data['avatar']
-                }]
+                }
             }
         except Exception as e:
             status_code = status.HTTP_400_BAD_REQUEST
@@ -116,7 +130,6 @@ class UpdateProfileView(RetrieveAPIView):
 
             instance.save()
             status_code = status.HTTP_200_OK
-
 
             district = Districts.objects.get(id=instance.district)
             course = Courses.objects.get(id=instance.course)
@@ -168,16 +181,25 @@ class CreateDistrictView(CreateAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        status_code = status.HTTP_201_CREATED
+        try:
+            data = Districts.objects.get(district=request.data.get('district'))
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'status code': status_code,
+                'message': 'District already exists',
+            }
+        except:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            status_code = status.HTTP_201_CREATED
 
-        response = {
-            'success': True,
-            'status code': status_code,
-            'message': 'District created successfully',
-        }
+            response = {
+                'success': True,
+                'status code': status_code,
+                'message': 'District created successfully',
+            }
 
         return Response(response, status=status_code)
 
@@ -187,16 +209,25 @@ class CreateBranchView(CreateAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        status_code = status.HTTP_201_CREATED
+        try:
+            data = Branches.objects.get(branch=request.data.get('branch'))
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'status code': status_code,
+                'message': 'Branch already exists',
+            }
+        except:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            status_code = status.HTTP_201_CREATED
 
-        response = {
-            'success': True,
-            'status code': status_code,
-            'message': 'Branch created successfully',
-        }
+            response = {
+                'success': True,
+                'status code': status_code,
+                'message': 'Branch created successfully',
+            }
 
         return Response(response, status=status_code)
 
@@ -206,16 +237,25 @@ class CreateCourseView(CreateAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        status_code = status.HTTP_201_CREATED
+        try:
+            data = Courses.objects.get(course=request.data.get('course'))
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'status code': status_code,
+                'message': 'Course already exists',
+            }
+        except:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            status_code = status.HTTP_201_CREATED
 
-        response = {
-            'success': True,
-            'status code': status_code,
-            'message': 'Course created successfully',
-        }
+            response = {
+                'success': True,
+                'status code': status_code,
+                'message': 'Course created successfully',
+            }
 
         return Response(response, status=status_code)
 
@@ -225,16 +265,25 @@ class CreateCollegeView(CreateAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        status_code = status.HTTP_201_CREATED
+        try:
+            data = Colleges.objects.get(college=request.data.get('college'))
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'status code': status_code,
+                'message': 'College already exists',
+            }
+        except:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            status_code = status.HTTP_201_CREATED
 
-        response = {
-            'success': True,
-            'status code': status_code,
-            'message': 'College created successfully',
-        }
+            response = {
+                'success': True,
+                'status code': status_code,
+                'message': 'College created successfully',
+            }
 
         return Response(response, status=status_code)
 
@@ -275,35 +324,137 @@ class LogoutAPIView(GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ImageList(ListAPIView):
-    'List all images'
+class DistrictView(RetrieveDestroyAPIView):
+    permission_classes = (AllowAny,)
 
-    serializer_class = ImageSerializer
-    permission_classes = (IsAuthenticated,)
-    queryset = Image.objects.all()
-    authentication_classes = (JWTAuthentication,)
+    def get(self, request):
+        try:
+            district = Districts.objects.get(id=request.data.get('id'))
+            status_code = status.HTTP_200_OK
+            response = {
+                'district': district.district,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'message': 'district not found'
+            }
+        return Response(response, status=status_code)
+
+    def delete(self, request):
+        try:
+            district = Districts.objects.get(id=request.data.get('id'))
+            district.delete()
+            status_code = status.HTTP_200_OK
+            response = {
+                'success': True,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'message': 'district not found'
+            }
+        return Response(response, status=status_code)
 
 
-class ImageDetail(RetrieveAPIView):
-    """Retrieve an image instance"""
+class CollegeView(RetrieveDestroyAPIView):
+    permission_classes = (AllowAny,)
 
-    serializer_class = ImageSerializer
-    permission_classes = (IsAuthenticated,)
-    queryset = Image.objects.all()
-    authentication_classes = (JWTAuthentication,)
+    def get(self, request):
+        try:
+            college = Colleges.objects.get(id=request.data.get('id'))
+            status_code = status.HTTP_200_OK
+            response = {
+                'college': college.college,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'message': 'college not found'
+            }
+        return Response(response, status=status_code)
+
+    def delete(self, request):
+        try:
+            college = Colleges.objects.get(id=request.data.get('id'))
+            college.delete()
+            status_code = status.HTTP_200_OK
+            response = {
+                'success': True,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'message': 'college not found'
+            }
+        return Response(response, status=status_code)
 
 
-class ImageCreate(CreateAPIView):
-    """Create a new image instance"""
+class CourseView(RetrieveDestroyAPIView):
+    permission_classes = (AllowAny,)
 
-    serializer_class = ImageSerializer
+    def get(self, request):
+        try:
+            course = Courses.objects.get(id=request.data.get('id'))
+            status_code = status.HTTP_200_OK
+            response = {
+                'course': course.course,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'message': 'course not found'
+            }
+        return Response(response, status=status_code)
 
-    def post(self, request):
-        serializer = ImageSerializer(data=request.data)
-        if serializer.is_valid():
-            # Save request image in the database
-            serializer.save()
+    def delete(self, request):
+        try:
+            course = Courses.objects.get(id=request.data.get('id'))
+            course.delete()
+            status_code = status.HTTP_200_OK
+            response = {
+                'success': True,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'message': 'course not found'
+            }
+        return Response(response, status=status_code)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class BranchView(RetrieveDestroyAPIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        try:
+            branch = Branches.objects.get(id=request.data.get('id'))
+            status_code = status.HTTP_200_OK
+            response = {
+                'branch': branch.branch,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'message': 'branch not found'
+            }
+        return Response(response, status=status_code)
+
+    def delete(self, request):
+        try:
+            branch = Branches.objects.get(id=request.data.get('id'))
+            branch.delete()
+            status_code = status.HTTP_200_OK
+            response = {
+                'success': True,
+            }
+        except:
+            status_code = status.HTTP_403_FORBIDDEN
+            response = {
+                'success': False,
+                'message': 'branch not found'
+            }
+        return Response(response, status=status_code)

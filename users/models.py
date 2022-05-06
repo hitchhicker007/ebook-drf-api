@@ -30,7 +30,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(verbose_name='email_address', max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     USERNAME_FIELD = 'email'
@@ -52,7 +52,7 @@ class User(AbstractBaseUser):
 
 
 class Districts(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     district = models.CharField(max_length=50)
 
     class Meta:
@@ -60,7 +60,7 @@ class Districts(models.Model):
 
 
 class Courses(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     course = models.CharField(max_length=50)
 
     class Meta:
@@ -68,15 +68,16 @@ class Courses(models.Model):
 
 
 class Branches(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     branch = models.CharField(max_length=50)
+    course = models.CharField(max_length=50)
 
     class Meta:
         db_table = "branches"
 
 
 class Colleges(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,unique=True)
     college = models.CharField(max_length=50)
 
     class Meta:
@@ -91,7 +92,7 @@ def upload_to(instance, filename):
 
 
 class UserProfile(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,unique=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     name = models.CharField(max_length=50)
     district = models.CharField(max_length=50)
@@ -106,13 +107,8 @@ class UserProfile(models.Model):
 
 
 class Image(models.Model):
-    # Define fields like below
     image = models.ImageField(upload_to='images/%Y/%m/%d/')
-    # auto_now_add set to true makes this field filled with the date of entry creation
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # we will add more fields here later
-
-    # Django is using this method to display an object in the Django admin site
     def __str__(self):
         return self.image

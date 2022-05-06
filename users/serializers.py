@@ -68,7 +68,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branches
-        fields = ('id', 'branch')
+        fields = '__all__'
 
 
 class CollegeSerializer(serializers.ModelSerializer):

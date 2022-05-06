@@ -3,5 +3,8 @@ from .views import *
 
 urlpatterns = [
     path('add-book', AddBookView.as_view()),
-    path('get-user-books', GetUserBooksView.as_view()),
+
+    path('get-books', GetBooksView.as_view())
+
+
 ]

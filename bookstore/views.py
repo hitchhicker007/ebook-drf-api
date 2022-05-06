@@ -1,16 +1,14 @@
-from django.shortcuts import render
-from .models import *
 from .serializers import *
 
 from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
+from rest_framework.filters import SearchFilter
 
-# Create your views here.
 
 class AddBookView(CreateAPIView):
     serializer_class = BookSerializer
@@ -41,12 +39,11 @@ class AddBookView(CreateAPIView):
         return Response(response, status=status_code)
 
 
-class GetUserBooksView(ListAPIView):
-    serializer_class = BookSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JWTAuthentication,)
-    pagination_class = LimitOffsetPagination
+class GetBooksView(ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookListingSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['seller', 'name', 'subject', 'course', 'branch', 'sem', 'district']
+    search_fields = ['name', 'subject']
 
-    def get_queryset(self):
-        user = self.request.user
-        return Book.objects.filter(seller=user.id)
+

@@ -16,7 +16,8 @@ urlpatterns = [
     path('get-branches', GetBranchesView.as_view()),
     path('update-profile', UpdateProfileView.as_view()),
 
-    re_path(r'^images/$', ImageList.as_view()),
-    re_path(r'^images/(?P<pk>[0-9]+)/$', ImageDetail.as_view()),
-    re_path(r'^images/create/$', ImageCreate.as_view()),
+    path('district', DistrictView.as_view()),
+    path('college', CollegeView.as_view()),
+    path('course', CourseView.as_view()),
+    path('branch', BranchView.as_view())
 ]
