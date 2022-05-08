@@ -108,48 +108,14 @@ class UpdateProfileView(RetrieveAPIView):
     def post(self, request):
         try:
             instance = UserProfile.objects.get(user=request.user)
-            name = request.data.get('name')
-            district = request.data.get('district')
-            course = request.data.get('course')
-            branch = request.data.get('branch')
-            sem = request.data.get('sem')
-            college = request.data.get('college')
 
-            if name != None and name != "":
-                instance.name = name
-            if district != None and district != "":
-                instance.district = district
-            if course != None and course != "":
-                instance.course = course
-            if branch != None and branch != "":
-                instance.branch = branch
-            if sem != None and sem != "":
-                instance.sem = sem
-            if college != None and college != "":
-                instance.college = college
+            serializer = UpdateProfileSerializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-            instance.save()
             status_code = status.HTTP_200_OK
+            response = serializer.data
 
-            district = Districts.objects.get(id=instance.district)
-            course = Courses.objects.get(id=instance.course)
-            branch = Branches.objects.get(id=instance.branch)
-            college = Colleges.objects.get(id=instance.college)
-
-            response = {
-                'success': 'true',
-                'status code': status_code,
-                'message': 'User profile updated successfully',
-                'data': [{
-                    'name': instance.name,
-                    'email': request.user.email,
-                    'district': district.district,
-                    'course': course.course,
-                    'branch': branch.branch,
-                    'sem': instance.sem,
-                    'college': college.college,
-                }]
-            }
         except Exception as e:
             status_code = status.HTTP_400_BAD_REQUEST
             response = {

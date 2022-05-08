@@ -7,6 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+from rest_framework.pagination import LimitOffsetPagination
 
 import os
 
@@ -50,6 +51,7 @@ class GetBooksView(ListAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['seller', 'name', 'subject', 'course', 'branch', 'sem', 'district']
     search_fields = ['name', 'subject']
+    pagination_class = LimitOffsetPagination
 
 
 class BookDetailsView(RetrieveUpdateDestroyAPIView):
