@@ -33,6 +33,7 @@ class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(verbose_name='email_address', max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserManager()

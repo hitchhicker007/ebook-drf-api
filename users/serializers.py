@@ -210,3 +210,5 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('name', 'district', 'course', 'branch', 'sem', 'college', 'avatar')
+
+

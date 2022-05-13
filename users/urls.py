@@ -16,6 +16,12 @@ urlpatterns = [
     path('get-branches', GetBranchesView.as_view()),
     path('update-profile', UpdateProfileView.as_view()),
 
+    path('verify-email', VerifyEmail.as_view(), name='verify-email'),
+    path('request-reset-email', ReqeustPasswordResetEmail.as_view(), name='request-reset-email'),
+    path('password-reset/<uidb64>/<token>', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
+    path('password-reset-complete', SetNewPasswordView.as_view(), name='password-reset-complete'),
+
+
     path('district', DistrictView.as_view()),
     path('college', CollegeView.as_view()),
     path('course', CourseView.as_view()),
