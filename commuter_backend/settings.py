@@ -47,6 +47,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'bookstore',
+    'district',
+    'college',
+    'course',
+    'branch'
 ]
 
 

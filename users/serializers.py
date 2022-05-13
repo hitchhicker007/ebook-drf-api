@@ -52,28 +52,9 @@ class Base64ImageField(serializers.ImageField):
         return extension
 
 
-class DistrictSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Districts
-        fields = ('id', 'district')
 
 
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Courses
-        fields = ('id', 'course')
 
-
-class BranchSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Branches
-        fields = '__all__'
-
-
-class CollegeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Colleges
-        fields = ('id', 'college')
 
 
 class UserSerializer(serializers.ModelSerializer):

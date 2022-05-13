@@ -11,7 +11,9 @@ from rest_framework.pagination import LimitOffsetPagination
 
 import os
 
-from users.models import Courses, Branches, Districts
+from course.models import Courses
+from branch.models import Branches
+from district.models import Districts
 
 
 class AddBookView(CreateAPIView):

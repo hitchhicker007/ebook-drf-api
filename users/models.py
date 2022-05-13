@@ -52,37 +52,7 @@ class User(AbstractBaseUser):
         }
 
 
-class Districts(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    district = models.CharField(max_length=50)
 
-    class Meta:
-        db_table = "districts"
-
-
-class Courses(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    course = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = "courses"
-
-
-class Branches(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    branch = models.CharField(max_length=50)
-    course = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = "branches"
-
-
-class Colleges(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,unique=True)
-    college = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = "colleges"
 
 
 def upload_to(instance, filename):

@@ -10,6 +10,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),
+    path('api/', include('district.urls')),
+    path('api/', include('college.urls')),
+    path('api/', include('course.urls')),
+    path('api/', include('branch.urls')),
     path('api/', include('bookstore.urls')),
     path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
