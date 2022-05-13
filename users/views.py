@@ -8,16 +8,15 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes
 
 from .serializers import *
 from .models import *
 from .utils import Util
 
 from district.models import Districts
+from college.models import Colleges
+from course.models import Courses
+from branch.models import Branches
 
 
 class UserRegistrationView(CreateAPIView):
@@ -192,13 +191,6 @@ class BlacklistTokenView(RetrieveAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-
-
-
-
 class LogoutAPIView(GenericAPIView):
     serializer_class = LogoutSerializer
     permission_classes = (IsAuthenticated,)
@@ -209,7 +201,6 @@ class LogoutAPIView(GenericAPIView):
         serializer.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 
 class ReqeustPasswordResetEmail(GenericAPIView):
@@ -223,7 +214,7 @@ class ReqeustPasswordResetEmail(GenericAPIView):
             token = PasswordResetTokenGenerator().make_token(user)
 
             current_site = get_current_site(request)
-            relative_link = reverse('password-reset-confirm', kwargs={'uidb64':uidb64,'token':token})
+            relative_link = reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
             abs_url = 'http://' + str(current_site) + str(relative_link)
 
             email_body = 'Hi there, Please use below link to reset your password!\n' + abs_url + '\nThank you.'
@@ -248,7 +239,8 @@ class PasswordTokenCheckAPI(GenericAPIView):
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response({'error': 'Token is not valid, request for new one.'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'error': 'Token is not valid, request for new one.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
 
             return Response({'success': True, 'uidb64': uidb64, 'token': token}, status=status.HTTP_200_OK)
 
@@ -267,5 +259,3 @@ class SetNewPasswordView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
-
-
