@@ -8,10 +8,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+from django.shortcuts import render
 
 from .serializers import *
 from .models import *
 from .utils import Util
+from .forms import PasswordResetForm
 
 from district.models import Districts
 from college.models import Colleges
@@ -251,11 +253,48 @@ class PasswordTokenCheckAPI(GenericAPIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SetNewPasswordView(GenericAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = SetNewPasswordSerializer
+def passwordResetView(request, uidb64, token):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            confirmPassword = form.cleaned_data['confirmPassword']
+            print(f'{password}--------{confirmPassword}')
+            if password != confirmPassword:
+                form = PasswordResetForm()
+                return render(request, 'reset_pass.html', {'form': form, 'error': 'password does not match'})
+            data = {
+                'password': password,
+                'token': token,
+                'uidb64': uidb64
+            }
+            serializer = SetNewPasswordSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            request.session['forward'] = False
+            return render(request, 'success.html')
 
-    def patch(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({'success': True, 'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
+    try:
+        id = smart_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(id=id)
+
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            return render(request, 'error_page.html', {'error': 'Token is not valid, request for new one.'})
+
+        form = PasswordResetForm()
+        return render(request, 'reset_pass.html', {'form': form})
+
+    except DjangoUnicodeDecodeError as e:
+        return render(request, 'error_page.html', {'error': str(e)})
+
+    except Exception as e:
+        return render(request, 'error_page.html', {'error': str(e)})
+
+
+# class SetNewPasswordView(GenericAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = SetNewPasswordSerializer
+#
+#     def patch(self, request):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         return Response({'success': True, 'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
