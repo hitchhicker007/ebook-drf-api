@@ -58,6 +58,35 @@ class UserRegistrationView(CreateAPIView):
         return Response(response, status=status_code)
 
 
+class SendEmailConfirmationView(GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        user_email = request.data.get('email')
+        user = User.objects.get(email=user_email)
+        token = RefreshToken.for_user(user).access_token
+
+        current_site = get_current_site(request)
+        relative_link = reverse('verify-email')
+        abs_url = 'http://' + str(current_site) + str(relative_link) + "?token=" + str(token)
+
+        email_body = 'Hi there, Please verify your bookstore email using below link!\n' + abs_url + '\nThank you.'
+
+        data = {
+            'email_subject': 'Verify your email',
+            'email_body': email_body,
+            'to_email': user_email
+        }
+
+        Util.send_email(data)
+
+        response = {
+            'success': True,
+            'message': 'confirmation mail sent successfully',
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
 class VerifyEmail(GenericAPIView):
     permission_classes = (AllowAny,)
 
