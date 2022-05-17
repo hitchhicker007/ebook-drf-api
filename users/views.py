@@ -20,6 +20,9 @@ from college.models import Colleges
 from course.models import Courses
 from branch.models import Branches
 
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 class UserRegistrationView(CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -70,11 +73,22 @@ class SendEmailConfirmationView(GenericAPIView):
         relative_link = reverse('verify-email')
         abs_url = 'http://' + str(current_site) + str(relative_link) + "?token=" + str(token)
 
-        email_body = 'Hi there, Please verify your bookstore email using below link!\n' + abs_url + '\nThank you.'
+        message = MIMEMultipart("alternative")
+        html = f"""\
+                <html>
+                  <body>
+                    <p>Hi,<br>
+                       You can reset your password using link below.<br>
+                       <a href="{abs_url}">Reset Password</a> 
+                    </p>
+                  </body>
+                </html>
+                """
+        message.attach(MIMEText(html, "html"))
 
         data = {
             'email_subject': 'Verify your email',
-            'email_body': email_body,
+            'email_body': "testing",
             'to_email': user_email
         }
 
@@ -87,25 +101,18 @@ class SendEmailConfirmationView(GenericAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class VerifyEmail(GenericAPIView):
-    permission_classes = (AllowAny,)
+def verifyEmail(request):
+    token = request.GET.get('token')
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY)
+        user = User.objects.get(id=payload['user_id'])
+        if not user.is_verified:
+            user.is_verified = True
+            user.save()
 
-    def get(self, request):
-        token = request.GET.get('token')
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
-            user = User.objects.get(id=payload['user_id'])
-            if not user.is_verified:
-                user.is_verified = True
-                user.save()
-
-            return Response({'email': 'successfully activated'}, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError as e:
-            return Response({'error': 'Activation token expired'}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as e:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return render(request, 'success.html', {'title': 'Email verified', 'message': 'Your email has been verified successfully.'})
+    except Exception as e:
+        return render(request, 'error_page.html', {'error': f'Something went wrong. \n{str(e)}'})
 
 
 class UserLoginView(RetrieveAPIView):
@@ -300,7 +307,7 @@ def passwordResetView(request, uidb64, token):
             serializer = SetNewPasswordSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             request.session['forward'] = False
-            return render(request, 'success.html')
+            return render(request, 'success.html', {'title': 'Password changed', 'message': 'Your password has been changed successfully.'})
 
     try:
         id = smart_str(urlsafe_base64_decode(uidb64))
@@ -318,12 +325,3 @@ def passwordResetView(request, uidb64, token):
     except Exception as e:
         return render(request, 'error_page.html', {'error': str(e)})
 
-
-# class SetNewPasswordView(GenericAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = SetNewPasswordSerializer
-#
-#     def patch(self, request):
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         return Response({'success': True, 'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
