@@ -9,11 +9,10 @@ urlpatterns = [
     path('update-profile', UpdateProfileView.as_view()),
 
     path('verify-email', verifyEmail, name='verify-email'),
-    path('send-email-confirmation', SendEmailConfirmationView.as_view()),
     path('request-reset-email', ReqeustPasswordResetEmail.as_view(), name='request-reset-email'),
     # path('password-reset/<uidb64>/<token>', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset/<uidb64>/<token>', passwordResetView, name='password-reset-confirm'),
     # path('password-reset-complete', SetNewPasswordView.as_view(), name='password-reset-complete'),
-
+    path('send-email-confirmation', SendEmailConfirmationView.as_view()),
 
 ]

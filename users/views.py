@@ -9,6 +9,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 
 from .serializers import *
 from .models import *
@@ -19,9 +20,6 @@ from district.models import Districts
 from college.models import Colleges
 from course.models import Courses
 from branch.models import Branches
-
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 
 class UserRegistrationView(CreateAPIView):
@@ -42,11 +40,11 @@ class UserRegistrationView(CreateAPIView):
         relative_link = reverse('verify-email')
         abs_url = 'http://' + str(current_site) + str(relative_link) + "?token=" + str(token)
 
-        email_body = 'Hi there, Please verify your bookstore email using below link!\n' + abs_url + '\nThank you.'
+        html_message = render_to_string('confirmation_mail.html', {'url': abs_url})
 
         data = {
             'email_subject': 'Verify your email',
-            'email_body': email_body,
+            'email_body': html_message,
             'to_email': user_email
         }
 
@@ -73,22 +71,11 @@ class SendEmailConfirmationView(GenericAPIView):
         relative_link = reverse('verify-email')
         abs_url = 'http://' + str(current_site) + str(relative_link) + "?token=" + str(token)
 
-        message = MIMEMultipart("alternative")
-        html = f"""\
-                <html>
-                  <body>
-                    <p>Hi,<br>
-                       You can reset your password using link below.<br>
-                       <a href="{abs_url}">Reset Password</a> 
-                    </p>
-                  </body>
-                </html>
-                """
-        message.attach(MIMEText(html, "html"))
+        html_message = render_to_string('confirmation_mail.html', {'url': abs_url})
 
         data = {
             'email_subject': 'Verify your email',
-            'email_body': "testing",
+            'email_body': html_message,
             'to_email': user_email
         }
 
@@ -112,7 +99,7 @@ def verifyEmail(request):
 
         return render(request, 'success.html', {'title': 'Email verified', 'message': 'Your email has been verified successfully.'})
     except Exception as e:
-        return render(request, 'error_page.html', {'error': f'Something went wrong. \n{str(e)}'})
+        return render(request, 'error_page.html', {'error': 'Something went wrong.'})
 
 
 class UserLoginView(RetrieveAPIView):
@@ -248,6 +235,7 @@ class ReqeustPasswordResetEmail(GenericAPIView):
         email = request.data.get('email')
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
+            profile = UserProfile.objects.get(user=user)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
 
@@ -255,11 +243,11 @@ class ReqeustPasswordResetEmail(GenericAPIView):
             relative_link = reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
             abs_url = 'http://' + str(current_site) + str(relative_link)
 
-            email_body = 'Hi there, Please use below link to reset your password!\n' + abs_url + '\nThank you.'
+            html_message = render_to_string('password_reset_mail.html', {'name': profile.name, 'url': abs_url})
 
             data = {
                 'email_subject': 'Password reset email',
-                'email_body': email_body,
+                'email_body': html_message,
                 'to_email': user.email
             }
 
@@ -324,4 +312,3 @@ def passwordResetView(request, uidb64, token):
 
     except Exception as e:
         return render(request, 'error_page.html', {'error': str(e)})
-
