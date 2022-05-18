@@ -1,6 +1,6 @@
 from .serializers import *
 
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -127,3 +127,28 @@ class BookDetailsView(RetrieveUpdateDestroyAPIView):
                 'error': str(e)
             }
         return Response(response, status=status_code)
+
+
+class CreateBuyRequestView(GenericAPIView):
+    serializer_class = BuyRequestSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        status_code = status.HTTP_201_CREATED
+        response = {
+            'msg': 'book request created'
+        }
+        return Response(response, status=status_code)
+
+
+class BuyRequestsView(GenericAPIView):
+    queryset = BuyRequest.objects.all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JWTAuthentication,)
+    serializer_class = BuyRequestSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['buyer_id', 'seller_id', 'status']
+    pagination_class = LimitOffsetPagination
+

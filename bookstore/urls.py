@@ -6,4 +6,7 @@ urlpatterns = [
     path('get-books', GetBooksView.as_view()),
     path('book-details', BookDetailsView.as_view()),
 
+    path('create-buy-request', CreateBuyRequestView.as_view()),
+    path('buy-requests', BuyRequestsView.as_view())
+
 ]

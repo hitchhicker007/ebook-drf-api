@@ -52,9 +52,6 @@ class User(AbstractBaseUser):
         }
 
 
-
-
-
 def upload_to(instance, filename):
     now = timezone.now()
     base, extension = os.path.splitext(filename.lower())
@@ -63,7 +60,7 @@ def upload_to(instance, filename):
 
 
 class UserProfile(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     name = models.CharField(max_length=50)
     district = models.CharField(max_length=50)

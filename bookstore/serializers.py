@@ -18,3 +18,9 @@ class BookListingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ('id', 'image', 'name', 'subject', 'publication')
+
+
+class BuyRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BuyRequest
+        fields = '__all__'
